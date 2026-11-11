@@ -264,3 +264,4 @@ export const GuestTicketPass: React.FC<GuestTicketPassProps> = ({ guestName, pax
     </section>
   );
 };
+

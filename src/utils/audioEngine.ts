@@ -1,11 +1,14 @@
 /**
  * Robust Hybrid Audio Engine
- * 1. Plays local/remote audio file (All of Me / A Thousand Years) if placed in public/audio.
- * 2. Gracefully falls back to high-fidelity acoustic Web Audio API synthesizer
- *    tuned with the iconic chord progressions:
+ * 1. Plays local/remote audio file (All of Me / A Thousand Years) with high-fidelity WAV/MP3.
+ * 2. Unlocks AudioContext & HTMLAudioElement immediately upon user gesture.
+ * 3. Gracefully falls back to high-fidelity acoustic Web Audio API synthesizer
+ *    with recognizable melodies and rich chords if audio elements are restricted:
  *    - Side A: "All of Me" - John Legend (Em - C - G - D)
  *    - Side B: "A Thousand Years" - Christina Perri (C - G/B - Am7 - Fmaj7)
  */
+
+type AudioSubscriber = (state: { isPlaying: boolean; trackId: string; volume: number }) => void;
 
 class AudioEngine {
   private ctx: AudioContext | null = null;
@@ -16,34 +19,66 @@ class AudioEngine {
   private audioElement: HTMLAudioElement | null = null;
   private isUsingAudioElement: boolean = false;
   private currentTrackId: string = 'song-all-of-me';
+  private volume: number = 0.75;
+  private subscribers: Set<AudioSubscriber> = new Set();
+  private hasUnlocked: boolean = false;
 
-  // Iconic chord progressions
-  private songChords: Record<string, number[][]> = {
-    // "All of Me" - John Legend (Em - C - G - D)
-    'song-all-of-me': [
-      [164.81, 196.00, 246.94, 329.63, 392.00], // Em
-      [130.81, 196.00, 261.63, 329.63, 392.00], // C
-      [196.00, 246.94, 293.66, 392.00, 493.88], // G
-      [146.83, 220.00, 293.66, 369.99, 440.00], // D
-    ],
-    // "A Thousand Years" - Christina Perri (C - G/B - Am7 - Fmaj7)
-    'song-a-thousand-years': [
-      [130.81, 196.00, 261.63, 329.63, 523.25], // C
-      [123.47, 196.00, 246.94, 293.66, 392.00], // G/B
-      [110.00, 164.81, 220.00, 261.63, 329.63], // Am7
-      [174.61, 220.00, 261.63, 349.23, 440.00], // Fmaj7
-    ],
-  };
+  constructor() {
+    // Proactively attach user gesture unlock listeners
+    if (typeof window !== 'undefined') {
+      const unlock = () => {
+        this.unlockContext();
+        if (this.hasUnlocked) {
+          window.removeEventListener('pointerdown', unlock);
+          window.removeEventListener('keydown', unlock);
+          window.removeEventListener('touchstart', unlock);
+        }
+      };
+      window.addEventListener('pointerdown', unlock, { passive: true });
+      window.addEventListener('keydown', unlock, { passive: true });
+      window.addEventListener('touchstart', unlock, { passive: true });
+    }
+  }
+
+  public subscribe(cb: AudioSubscriber): () => void {
+    this.subscribers.add(cb);
+    cb({ isPlaying: this.isPlaying, trackId: this.currentTrackId, volume: this.volume });
+    return () => {
+      this.subscribers.delete(cb);
+    };
+  }
+
+  private notify() {
+    for (const cb of this.subscribers) {
+      cb({ isPlaying: this.isPlaying, trackId: this.currentTrackId, volume: this.volume });
+    }
+  }
+
+  public unlockContext() {
+    try {
+      this.initContext();
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+      this.hasUnlocked = true;
+    } catch {
+      // Ignore
+    }
+  }
 
   private initContext() {
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      this.ctx = new AudioCtx();
-      this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-      this.masterGain.connect(this.ctx.destination);
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+        this.masterGain.connect(this.ctx.destination);
+      }
     }
-    if (this.ctx.state === 'suspended') {
+    if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
   }
@@ -61,17 +96,17 @@ class AudioEngine {
       const gain = this.ctx.createGain();
 
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(190, now);
-      osc.frequency.exponentialRampToValueAtTime(45, now + 0.15);
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(45, now + 0.16);
 
-      gain.gain.setValueAtTime(0.45, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+      gain.gain.setValueAtTime(0.55 * this.volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
 
       osc.connect(gain);
       gain.connect(this.masterGain);
 
       osc.start(now);
-      osc.stop(now + 0.16);
+      osc.stop(now + 0.17);
     } catch {
       // AudioContext policy
     }
@@ -86,7 +121,7 @@ class AudioEngine {
       if (!this.ctx || !this.masterGain) return;
 
       const now = this.ctx.currentTime;
-      const bufferSize = this.ctx.sampleRate * 0.12;
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.15);
       const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
       const data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
@@ -98,11 +133,11 @@ class AudioEngine {
 
       const filter = this.ctx.createBiquadFilter();
       filter.type = 'bandpass';
-      filter.frequency.value = 1100;
+      filter.frequency.value = 1200;
 
       const gain = this.ctx.createGain();
-      gain.gain.setValueAtTime(0.25, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+      gain.gain.setValueAtTime(0.4 * this.volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
 
       noise.connect(filter);
       filter.connect(gain);
@@ -118,96 +153,164 @@ class AudioEngine {
    * Start music with support for audio files or romantic acoustic synthesizer
    */
   public startMusic(audioSrc?: string, trackId: string = 'song-all-of-me') {
-    if (this.isPlaying) return;
-    this.playNeedleDrop();
-    this.isPlaying = true;
+    this.unlockContext();
     this.currentTrackId = trackId;
 
-    // Check if an audio file is specified and playable
+    // Check if an audio file is specified
     if (audioSrc) {
       if (this.audioElement) {
         this.audioElement.pause();
+        this.audioElement.currentTime = 0;
       }
-      this.audioElement = new Audio(audioSrc);
-      this.audioElement.loop = true;
-      this.audioElement.volume = 0.55;
 
-      this.audioElement.addEventListener('error', () => {
-        // Fall back to synth if file not found
-        this.isUsingAudioElement = false;
-        this.startSynth();
-      });
+      const audio = new Audio();
+      audio.src = audioSrc;
+      audio.loop = true;
+      audio.volume = this.volume;
+      this.audioElement = audio;
 
-      this.audioElement.play()
-        .then(() => {
-          this.isUsingAudioElement = true;
-        })
-        .catch(() => {
-          // Fall back to synth on policy or 404
-          this.isUsingAudioElement = false;
-          this.startSynth();
-        });
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            this.isPlaying = true;
+            this.isUsingAudioElement = true;
+            this.notify();
+          })
+          .catch((err) => {
+            console.warn('Audio playback fallback to synth:', err);
+            // Fall back immediately to Web Audio synth
+            this.isUsingAudioElement = false;
+            this.startSynth();
+          });
+      }
       return;
     }
 
     this.startSynth();
   }
 
+  /**
+   * Full acoustic grand piano & warm strings synthesizer fallback
+   */
   private startSynth() {
     this.initContext();
     if (!this.ctx || !this.masterGain) return;
 
-    // Smooth fade in
-    this.masterGain.gain.setValueAtTime(0.01, this.ctx.currentTime);
-    this.masterGain.gain.linearRampToValueAtTime(0.24, this.ctx.currentTime + 1.6);
+    this.isPlaying = true;
+    this.isUsingAudioElement = false;
+
+    // Smooth audible volume
+    this.masterGain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+    this.masterGain.gain.linearRampToValueAtTime(this.volume, this.ctx.currentTime + 0.8);
 
     this.currentStep = 0;
     this.scheduleNotes();
+    this.notify();
   }
 
+  // Musical note table (frequencies in Hz)
+  private readonly notes: Record<string, number> = {
+    E2: 82.41, G2: 98.00, A2: 110.00, B2: 123.47,
+    C3: 130.81, D3: 146.83, E3: 164.81, Fs3: 185.00, G3: 196.00, A3: 220.00, B3: 246.94,
+    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.00, A4: 440.00, B4: 493.88,
+    C5: 523.25, D5: 587.33, E5: 659.25, Fs5: 739.99, G5: 783.99, A5: 880.00, B5: 987.77,
+  };
+
+  // Polyphonic pattern sequences: [Chords], [Melody Notes]
   private scheduleNotes = () => {
     if (!this.isPlaying || !this.ctx || !this.masterGain || this.isUsingAudioElement) return;
 
-    const chords = this.songChords[this.currentTrackId] || this.songChords['song-all-of-me'];
-    const chord = chords[Math.floor(this.currentStep / 4) % chords.length];
-    const noteFreq = chord[this.currentStep % chord.length];
+    const isAllOfMe = this.currentTrackId === 'song-all-of-me';
+
+    // Iconic chords & melody steps
+    const chordProgressionAllOfMe = [
+      { bass: this.notes.E2, chord: [this.notes.G3, this.notes.B3, this.notes.E4], mel: this.notes.G4 },
+      { bass: this.notes.C3, chord: [this.notes.G3, this.notes.C4, this.notes.E4], mel: this.notes.Fs4 },
+      { bass: this.notes.G2, chord: [this.notes.B3, this.notes.D4, this.notes.G4], mel: this.notes.G4 },
+      { bass: this.notes.D3, chord: [this.notes.Fs3, this.notes.A3, this.notes.D4], mel: this.notes.B4 },
+      { bass: this.notes.E2, chord: [this.notes.G3, this.notes.B3, this.notes.E4], mel: this.notes.D5 },
+      { bass: this.notes.C3, chord: [this.notes.G3, this.notes.C4, this.notes.E4], mel: this.notes.C5 },
+      { bass: this.notes.G2, chord: [this.notes.B3, this.notes.D4, this.notes.G4], mel: this.notes.B4 },
+      { bass: this.notes.D3, chord: [this.notes.Fs3, this.notes.A3, this.notes.D4], mel: this.notes.A4 },
+    ];
+
+    const chordProgressionAThousandYears = [
+      { bass: this.notes.C3, chord: [this.notes.G3, this.notes.C4, this.notes.E4], mel: this.notes.E4 },
+      { bass: this.notes.B2, chord: [this.notes.G3, this.notes.D4, this.notes.G4], mel: this.notes.G4 },
+      { bass: this.notes.A2, chord: [this.notes.E3, this.notes.C4, this.notes.E4], mel: this.notes.A4 },
+      { bass: this.notes.G2, chord: [this.notes.D3, this.notes.B3, this.notes.D4], mel: this.notes.G4 },
+      { bass: this.notes.C3, chord: [this.notes.G3, this.notes.C4, this.notes.E4], mel: this.notes.C5 },
+      { bass: this.notes.B2, chord: [this.notes.G3, this.notes.D4, this.notes.G4], mel: this.notes.B4 },
+      { bass: this.notes.A2, chord: [this.notes.E3, this.notes.C4, this.notes.E4], mel: this.notes.A4 },
+      { bass: this.notes.G2, chord: [this.notes.D3, this.notes.B3, this.notes.D4], mel: this.notes.G4 },
+    ];
+
+    const currentSequence = isAllOfMe ? chordProgressionAllOfMe : chordProgressionAThousandYears;
+    const step = currentSequence[this.currentStep % currentSequence.length];
 
     const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const noteGain = this.ctx.createGain();
-    const filter = this.ctx.createBiquadFilter();
 
-    // Warm grand piano / Rhodes acoustic timbre
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(noteFreq, now);
+    // 1. Play Bass Note (Warm fundamental + second harmonic)
+    this.playTone(step.bass, now, 1.8, 0.45, 'triangle');
 
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(1600, now);
+    // 2. Play Arpeggiated Chord
+    step.chord.forEach((note, idx) => {
+      this.playTone(note, now + idx * 0.12, 1.4, 0.35, 'sine');
+    });
 
-    // Flowing piano / acoustic envelope
-    noteGain.gain.setValueAtTime(0, now);
-    noteGain.gain.linearRampToValueAtTime(0.2, now + 0.05);
-    noteGain.gain.exponentialRampToValueAtTime(0.001, now + 1.35);
-
-    osc.connect(filter);
-    filter.connect(noteGain);
-    noteGain.connect(this.masterGain);
-
-    osc.start(now);
-    osc.stop(now + 1.4);
+    // 3. Play Clear Singing Lead Melody
+    this.playTone(step.mel, now + 0.18, 1.6, 0.55, 'triangle');
 
     this.currentStep++;
-    this.timerId = window.setTimeout(this.scheduleNotes, 520);
+    const stepDelay = isAllOfMe ? 750 : 850;
+    this.timerId = window.setTimeout(this.scheduleNotes, stepDelay);
   };
+
+  private playTone(freq: number, startTime: number, duration: number, gainLevel: number, type: OscillatorType) {
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const osc = this.ctx.createOscillator();
+      const overtone = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      overtone.type = 'sine';
+      overtone.frequency.setValueAtTime(freq * 2, startTime);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2200, startTime);
+
+      // Natural acoustic piano ADSR envelope
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(gainLevel * this.volume, startTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+      osc.connect(filter);
+      overtone.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(startTime);
+      overtone.start(startTime);
+      osc.stop(startTime + duration + 0.05);
+      overtone.stop(startTime + duration + 0.05);
+    } catch {
+      // Ignore
+    }
+  }
 
   /**
    * Stop music
    */
   public stopMusic() {
-    if (!this.isPlaying) return;
     this.isPlaying = false;
 
-    if (this.audioElement && this.isUsingAudioElement) {
+    if (this.audioElement) {
       this.audioElement.pause();
     }
 
@@ -217,8 +320,10 @@ class AudioEngine {
     }
 
     if (this.masterGain && this.ctx) {
-      this.masterGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.8);
+      this.masterGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.4);
     }
+
+    this.notify();
   }
 
   public toggleMusic(audioSrc?: string, trackId?: string): boolean {
@@ -226,13 +331,32 @@ class AudioEngine {
       this.stopMusic();
       return false;
     } else {
-      this.startMusic(audioSrc, trackId);
+      this.startMusic(audioSrc, trackId || this.currentTrackId);
       return true;
     }
   }
 
+  public setVolume(vol: number) {
+    this.volume = Math.max(0, Math.min(1, vol));
+    if (this.audioElement) {
+      this.audioElement.volume = this.volume;
+    }
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+    }
+    this.notify();
+  }
+
+  public getVolume(): number {
+    return this.volume;
+  }
+
   public getIsPlaying(): boolean {
     return this.isPlaying;
+  }
+
+  public getCurrentTrackId(): string {
+    return this.currentTrackId;
   }
 }
 

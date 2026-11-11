@@ -10,10 +10,22 @@ interface VinylTurntableProps {
 }
 
 export const VinylTurntable: React.FC<VinylTurntableProps> = ({ autoPlayTrigger }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(() => soundEngine.getIsPlaying());
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isFloatingVisible, setIsFloatingVisible] = useState(false);
   const turntableRef = useRef<HTMLDivElement>(null);
+
+  // Sync state seamlessly with soundEngine
+  useEffect(() => {
+    const unsubscribe = soundEngine.subscribe(({ isPlaying: enginePlaying, trackId }) => {
+      setIsPlaying(enginePlaying);
+      const idx = weddingData.playlist.findIndex((t) => t.id === trackId);
+      if (idx !== -1) {
+        setCurrentTrackIndex(idx);
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   // 3D Motion values for turntable
   const mouseX = useMotionValue(0);
@@ -26,11 +38,10 @@ export const VinylTurntable: React.FC<VinylTurntableProps> = ({ autoPlayTrigger 
   const currentTrack = weddingData.playlist[currentTrackIndex];
 
   useEffect(() => {
-    if (autoPlayTrigger) {
+    if (autoPlayTrigger && !soundEngine.getIsPlaying()) {
       soundEngine.startMusic(currentTrack.src, currentTrack.id);
-      setIsPlaying(true);
     }
-  }, [autoPlayTrigger]);
+  }, [autoPlayTrigger, currentTrack]);
 
   useEffect(() => {
     const handleScroll = () => {

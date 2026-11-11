@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { soundEngine } from '../../utils/audioEngine';
+import { weddingData } from '../../data/weddingData';
 import { VintageWaxSeal } from './VintageWaxSeal';
 import { ButterflyFlight } from './ButterflyFlight';
 
@@ -59,7 +60,13 @@ export const EnvelopeGate: React.FC<EnvelopeGateProps> = ({ guestName, pax, onOp
   const handleOpenInvitation = () => {
     if (isOpening) return;
     setIsOpening(true);
+    soundEngine.unlockContext();
     soundEngine.playWaxSealSnap();
+    
+    // Start playback immediately in the user gesture context so browsers never block it
+    const firstTrack = weddingData.playlist[0];
+    soundEngine.startMusic(firstTrack.src, firstTrack.id);
+
     // Timing allows the butterflies to soar across screen gracefully
     setTimeout(() => {
       onOpen();

@@ -271,3 +271,4 @@ export const EventRundown: React.FC = () => {
     </section>
   );
 };
+

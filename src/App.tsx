@@ -16,6 +16,7 @@ import { VintageBackgroundPattern } from './components/common/VintageBackgroundP
 import { VintageDivider } from './components/common/VintageDivider';
 import { AmbientButterflies } from './components/common/AmbientButterflies';
 import { Scroll3DStory } from './components/story/Scroll3DStory';
+import { Scroll3DSection } from './components/common/Scroll3DSection';
 import { GuestTicketPass } from './components/ticket/GuestTicketPass';
 import { EventRundown } from './components/itinerary/EventRundown';
 import { weddingData } from './data/weddingData';
@@ -106,72 +107,92 @@ export function App() {
         <HeroSection guestName={guestName} />
 
         {/* Vintage Divider */}
-        <VintageDivider />
+        <VintageDivider className="my-8" />
 
         {/* VIP Guest Ticket Pass / E-Ticket */}
-        <GuestTicketPass guestName={guestName} pax={pax} />
+        <Scroll3DSection depth={36} maxRotate={4}>
+          <GuestTicketPass guestName={guestName} pax={pax} />
+        </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider />
+        <VintageDivider className="my-8" />
 
         {/* Analog Turntable Music Player */}
-        <section className="px-4">
-          <VinylTurntable autoPlayTrigger={isOpened} />
-        </section>
+        <Scroll3DSection depth={32} maxRotate={3.5}>
+          <section className="px-4">
+            <VinylTurntable autoPlayTrigger={isOpened} />
+          </section>
+        </Scroll3DSection>
 
-        {/* Vintage Divider */}
-        <VintageDivider />
+        {/* Vintage Divider with reduced tight gap */}
+        <VintageDivider className="my-3" />
 
         {/* Cinematic 3D Scroll Narrative Section */}
         <Scroll3DStory />
 
-        {/* Vintage Divider */}
-        <VintageDivider />
+        {/* Vintage Divider with reduced tight gap */}
+        <VintageDivider className="my-3" />
 
         {/* Couple Profile */}
-        <CoupleProfile />
+        <Scroll3DSection depth={40} maxRotate={4}>
+          <CoupleProfile />
+        </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider />
+        <VintageDivider className="my-8" />
 
         {/* Narrative Tracklist / Love Story */}
-        <LoveStoryTimeline />
+        <Scroll3DSection depth={36} maxRotate={4}>
+          <LoveStoryTimeline />
+        </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider />
+        <VintageDivider className="my-8" />
 
         {/* Event Schedule (Akad & Resepsi) */}
-        <EventDetails />
+        <Scroll3DSection depth={40} maxRotate={4}>
+          <EventDetails />
+        </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider />
+        <VintageDivider className="my-8" />
 
         {/* Day-of Event Rundown & Logistics / Parking Guide */}
-        <EventRundown />
+        <Scroll3DSection depth={40} maxRotate={4}>
+          <EventRundown />
+        </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider />
+        <VintageDivider className="my-8" />
 
         {/* Interactive RSVP */}
-        <RsvpSection
-          initialGuestName={guestName === 'Tamu Terhormat' ? '' : guestName}
-          onNewRsvpAdded={handleNewRsvp}
-        />
+        <Scroll3DSection depth={36} maxRotate={4}>
+          <RsvpSection
+            initialGuestName={guestName === 'Tamu Terhormat' ? '' : guestName}
+            onNewRsvpAdded={handleNewRsvp}
+          />
+        </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider />
+        <VintageDivider className="my-8" />
 
         {/* Dinding Doa & Ucapan */}
-        <WishesWall wishes={wishes} />
+        <Scroll3DSection depth={32} maxRotate={3.5}>
+          <WishesWall wishes={wishes} />
+        </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider />
+        <VintageDivider className="my-8" />
 
         {/* Amplop Digital & QRIS */}
-        <WeddingGift />
+        <Scroll3DSection depth={36} maxRotate={4}>
+          <WeddingGift />
+        </Scroll3DSection>
 
         {/* Footer */}
-        <WeddingFooter />
+        <Scroll3DSection depth={28} maxRotate={3}>
+          <WeddingFooter />
+        </Scroll3DSection>
       </main>
     </div>
   );

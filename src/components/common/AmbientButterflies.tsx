@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { VintageButterfly } from './VintageButterfly';
 import type { VintageButterflyColor } from './VintageButterfly';
 
@@ -92,8 +92,23 @@ const ambientList: ButterflyConfig[] = [
 ];
 
 export const AmbientButterflies: React.FC = () => {
+  const { scrollY } = useScroll();
+  const smoothScroll = useSpring(scrollY, { stiffness: 90, damping: 22 });
+
+  // 3D pitch/yaw tilt driven continuously by scroll motion
+  const scrollRotateX = useTransform(smoothScroll, [0, 4000], [0, 36]);
+  const scrollRotateY = useTransform(smoothScroll, (v) => Math.sin(v * 0.003) * 14);
+
   return (
-    <div className="fixed inset-0 pointer-events-none z-20 overflow-hidden select-none">
+    <motion.div
+      style={{
+        rotateX: scrollRotateX,
+        rotateY: scrollRotateY,
+        perspective: 1200,
+        transformStyle: 'preserve-3d',
+      }}
+      className="fixed inset-0 pointer-events-none z-20 overflow-hidden select-none"
+    >
       {ambientList.map((item) => (
         <motion.div
           key={item.id}
@@ -135,6 +150,6 @@ export const AmbientButterflies: React.FC = () => {
           />
         </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 };

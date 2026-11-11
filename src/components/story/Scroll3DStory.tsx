@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Sparkles, Heart } from 'lucide-react';
 import { VintageButterfly } from '../common/VintageButterfly';
 
@@ -43,43 +43,55 @@ export const Scroll3DStory: React.FC = () => {
     offset: ['start start', 'end end'],
   });
 
-  // Scene 1 Transforms (0.00 to 0.35)
-  const opacity1 = useTransform(scrollYProgress, [0.0, 0.1, 0.25, 0.34], [0, 1, 1, 0]);
-  const scale1 = useTransform(scrollYProgress, [0.0, 0.15, 0.34], [0.8, 1, 1.15]);
-  const rotateX1 = useTransform(scrollYProgress, [0.0, 0.15, 0.34], ['28deg', '0deg', '-24deg']);
-  const z1 = useTransform(scrollYProgress, [0.0, 0.15, 0.34], [-200, 0, 120]);
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 24,
+    restDelta: 0.001,
+  });
 
-  // Scene 2 Transforms (0.33 to 0.68)
-  const opacity2 = useTransform(scrollYProgress, [0.33, 0.44, 0.58, 0.68], [0, 1, 1, 0]);
-  const scale2 = useTransform(scrollYProgress, [0.33, 0.48, 0.68], [0.8, 1, 1.15]);
-  const rotateX2 = useTransform(scrollYProgress, [0.33, 0.48, 0.68], ['28deg', '0deg', '-24deg']);
-  const z2 = useTransform(scrollYProgress, [0.33, 0.48, 0.68], [-200, 0, 120]);
+  // Scene 1: Already visible from the start so there's zero empty gap, fades out at ~0.35
+  const opacity1 = useTransform(smoothProgress, [0.0, 0.28, 0.36], [1, 1, 0]);
+  const scale1 = useTransform(smoothProgress, [0.0, 0.15, 0.36], [1, 1, 1.08]);
+  const rotateX1 = useTransform(smoothProgress, [0.0, 0.15, 0.36], ['0deg', '0deg', '-16deg']);
+  const z1 = useTransform(smoothProgress, [0.0, 0.15, 0.36], [0, 0, 80]);
 
-  // Scene 3 Transforms (0.67 to 1.00)
-  const opacity3 = useTransform(scrollYProgress, [0.67, 0.78, 0.92, 1.0], [0, 1, 1, 1]);
-  const scale3 = useTransform(scrollYProgress, [0.67, 0.82, 1.0], [0.8, 1, 1.05]);
-  const rotateX3 = useTransform(scrollYProgress, [0.67, 0.82, 1.0], ['28deg', '0deg', '0deg']);
-  const z3 = useTransform(scrollYProgress, [0.67, 0.82, 1.0], [-200, 0, 50]);
+  // Scene 2: Cross-fades seamlessly with Scene 1, stays centered, fades out at ~0.70
+  const opacity2 = useTransform(smoothProgress, [0.30, 0.38, 0.62, 0.70], [0, 1, 1, 0]);
+  const scale2 = useTransform(smoothProgress, [0.30, 0.48, 0.70], [0.92, 1, 1.08]);
+  const rotateX2 = useTransform(smoothProgress, [0.30, 0.48, 0.70], ['16deg', '0deg', '-16deg']);
+  const z2 = useTransform(smoothProgress, [0.30, 0.48, 0.70], [-80, 0, 80]);
+
+  // Scene 3: Cross-fades seamlessly with Scene 2, stays until the end of the narrative act
+  const opacity3 = useTransform(smoothProgress, [0.64, 0.72, 1.0], [0, 1, 1]);
+  const scale3 = useTransform(smoothProgress, [0.64, 0.78, 1.0], [0.92, 1, 1]);
+  const rotateX3 = useTransform(smoothProgress, [0.64, 0.78, 1.0], ['16deg', '0deg', '0deg']);
+  const z3 = useTransform(smoothProgress, [0.64, 0.78, 1.0], [-80, 0, 0]);
 
   // Progress bar indicator
-  const progressWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+  const progressWidth = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
 
   return (
-    <section ref={containerRef} className="relative h-[280vh] w-full select-none">
-      {/* Sticky 3D Viewport */}
+    <section
+      ref={containerRef}
+      className="relative h-[165vh] w-full select-none my-2"
+    >
+      {/* Compact Sticky 3D Viewport without overly large vertical gaps */}
       <div
-        className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden px-4"
+        className="sticky top-[10vh] min-h-[440px] max-h-[75vh] h-[65vh] w-full flex flex-col items-center justify-center overflow-hidden px-4"
         style={{ perspective: 1200 }}
       >
         {/* Subtle Background Glow Aura */}
-        <div className="absolute w-[600px] h-[600px] rounded-full bg-primary/8 blur-[160px] pointer-events-none" />
-        <div className="absolute w-[450px] h-[450px] rounded-full bg-accent/7 blur-[140px] pointer-events-none" />
+        <div className="absolute w-[500px] h-[350px] rounded-full bg-primary/8 blur-[120px] pointer-events-none" />
+        <div className="absolute w-[350px] h-[350px] rounded-full bg-accent/7 blur-[100px] pointer-events-none" />
 
-        {/* Ambient Floating Dust */}
-        <div className="absolute inset-0 bg-paper-grain opacity-40 pointer-events-none" />
+        {/* Ambient Paper Grain */}
+        <div className="absolute inset-0 bg-paper-grain opacity-30 pointer-events-none" />
 
-        {/* 3D Kinetic Text Container */}
-        <div className="relative w-full max-w-4xl mx-auto text-center" style={{ transformStyle: 'preserve-3d' }}>
+        {/* 3D Kinetic Text Container with tight, focused framing */}
+        <div
+          className="relative w-full max-w-3xl mx-auto text-center h-[280px] sm:h-[300px] flex items-center justify-center"
+          style={{ transformStyle: 'preserve-3d' }}
+        >
           {/* ================= SCENE 1 ================= */}
           <motion.div
             style={{
@@ -89,28 +101,28 @@ export const Scroll3DStory: React.FC = () => {
               z: z1,
               transformStyle: 'preserve-3d',
             }}
-            className="absolute inset-0 flex flex-col items-center justify-center space-y-4 px-4 pointer-events-none"
+            className="absolute inset-0 flex flex-col items-center justify-center space-y-3 px-4 pointer-events-none"
           >
-            <div className="inline-flex items-center gap-2 py-1 px-3.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-mono tracking-[0.28em] text-primary uppercase">
+            <div className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-mono tracking-[0.25em] text-primary uppercase">
               <Sparkles className="w-3 h-3 text-primary" />
               <span>{scenes[0].tag}</span>
             </div>
 
-            <div className="space-y-2">
-              <h3 className="font-serif text-3xl sm:text-5xl md:text-6xl text-textMain font-normal leading-tight tracking-wide drop-shadow-sm">
+            <div className="space-y-1">
+              <h3 className="font-serif text-2xl sm:text-4xl md:text-5xl text-textMain font-normal leading-tight tracking-wide">
                 {scenes[0].line1}
               </h3>
-              <h3 className="font-serif italic text-3xl sm:text-5xl md:text-6xl text-primary font-normal leading-tight drop-shadow-sm">
+              <h3 className="font-serif italic text-2xl sm:text-4xl md:text-5xl text-primary font-normal leading-tight">
                 {scenes[0].line2}
               </h3>
             </div>
 
-            <p className="font-sans text-xs sm:text-base text-textMuted max-w-lg mx-auto pt-2 font-light leading-relaxed">
+            <p className="font-sans text-xs sm:text-sm text-textMuted max-w-md mx-auto pt-1 font-light leading-relaxed">
               {scenes[0].subtext}
             </p>
 
-            <div className="pt-3">
-              <VintageButterfly color={scenes[0].butterflyColor} size={36} />
+            <div className="pt-2">
+              <VintageButterfly color={scenes[0].butterflyColor} size={32} />
             </div>
           </motion.div>
 
@@ -123,28 +135,28 @@ export const Scroll3DStory: React.FC = () => {
               z: z2,
               transformStyle: 'preserve-3d',
             }}
-            className="absolute inset-0 flex flex-col items-center justify-center space-y-4 px-4 pointer-events-none"
+            className="absolute inset-0 flex flex-col items-center justify-center space-y-3 px-4 pointer-events-none"
           >
-            <div className="inline-flex items-center gap-2 py-1 px-3.5 rounded-full bg-accent/15 border border-accent/25 text-[10px] font-mono tracking-[0.28em] text-accent uppercase">
+            <div className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-accent/15 border border-accent/25 text-[10px] font-mono tracking-[0.25em] text-accent uppercase">
               <Heart className="w-3 h-3 text-accent fill-accent/30" />
               <span>{scenes[1].tag}</span>
             </div>
 
-            <div className="space-y-2">
-              <h3 className="font-serif text-3xl sm:text-5xl md:text-6xl text-textMain font-normal leading-tight tracking-wide drop-shadow-sm">
+            <div className="space-y-1">
+              <h3 className="font-serif text-2xl sm:text-4xl md:text-5xl text-textMain font-normal leading-tight tracking-wide">
                 {scenes[1].line1}
               </h3>
-              <h3 className="font-serif italic text-3xl sm:text-5xl md:text-6xl text-accent font-normal leading-tight drop-shadow-sm">
+              <h3 className="font-serif italic text-2xl sm:text-4xl md:text-5xl text-accent font-normal leading-tight">
                 {scenes[1].line2}
               </h3>
             </div>
 
-            <p className="font-sans text-xs sm:text-base text-textMuted max-w-lg mx-auto pt-2 font-light leading-relaxed">
+            <p className="font-sans text-xs sm:text-sm text-textMuted max-w-md mx-auto pt-1 font-light leading-relaxed">
               {scenes[1].subtext}
             </p>
 
-            <div className="pt-3">
-              <VintageButterfly color={scenes[1].butterflyColor} size={38} />
+            <div className="pt-2">
+              <VintageButterfly color={scenes[1].butterflyColor} size={34} />
             </div>
           </motion.div>
 
@@ -157,50 +169,52 @@ export const Scroll3DStory: React.FC = () => {
               z: z3,
               transformStyle: 'preserve-3d',
             }}
-            className="absolute inset-0 flex flex-col items-center justify-center space-y-4 px-4 pointer-events-none"
+            className="absolute inset-0 flex flex-col items-center justify-center space-y-3 px-4 pointer-events-none"
           >
-            <div className="inline-flex items-center gap-2 py-1 px-3.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-mono tracking-[0.28em] text-primary uppercase">
+            <div className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-mono tracking-[0.25em] text-primary uppercase">
               <Sparkles className="w-3 h-3 text-primary" />
               <span>{scenes[2].tag}</span>
             </div>
 
-            <div className="space-y-2">
-              <h3 className="font-serif text-3xl sm:text-5xl md:text-6xl text-textMain font-normal leading-tight tracking-wide drop-shadow-sm">
+            <div className="space-y-1">
+              <h3 className="font-serif text-2xl sm:text-4xl md:text-5xl text-textMain font-normal leading-tight tracking-wide">
                 {scenes[2].line1}
               </h3>
-              <h3 className="font-serif italic text-3xl sm:text-5xl md:text-6xl text-primary font-normal leading-tight drop-shadow-sm">
+              <h3 className="font-serif italic text-2xl sm:text-4xl md:text-5xl text-primary font-normal leading-tight">
                 {scenes[2].line2}
               </h3>
             </div>
 
-            <div className="pt-3 flex flex-col items-center gap-2">
-              <div className="w-12 h-12 rounded-full border border-primary/30 flex items-center justify-center font-serif italic text-xl text-primary bg-paper shadow-sm">
+            <div className="pt-2 flex flex-col items-center gap-1.5">
+              <div className="w-10 h-10 rounded-full border border-primary/30 flex items-center justify-center font-serif italic text-base text-primary bg-paper shadow-sm">
                 T&amp;Z
               </div>
-              <span className="font-mono text-xs text-textMuted uppercase tracking-widest">
+              <span className="font-mono text-[11px] text-textMuted uppercase tracking-widest">
                 {scenes[2].subtext}
               </span>
             </div>
 
-            <div className="pt-2">
-              <VintageButterfly color={scenes[2].butterflyColor} size={40} />
+            <div className="pt-1">
+              <VintageButterfly color={scenes[2].butterflyColor} size={36} />
             </div>
           </motion.div>
         </div>
 
-        {/* Bottom Scroll Progress Bar Indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-48 sm:w-64 h-1 bg-borderSubtle/60 rounded-full overflow-hidden">
-          <motion.div
-            style={{ width: progressWidth }}
-            className="h-full bg-gradient-to-r from-primary via-accent to-primary"
-          />
-        </div>
+        {/* Compact Bottom Progress Bar & Instruction right under the stage */}
+        <div className="mt-4 flex flex-col items-center gap-2">
+          <div className="w-44 sm:w-56 h-1 bg-borderSubtle/60 rounded-full overflow-hidden">
+            <motion.div
+              style={{ width: progressWidth }}
+              className="h-full bg-gradient-to-r from-primary via-accent to-primary"
+            />
+          </div>
 
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[10px] font-mono tracking-widest text-textMuted uppercase flex items-center gap-1.5 opacity-70">
-          <span>Gulir perlahan untuk menelusuri kisah 3D</span>
+          <div className="text-[10px] font-mono tracking-widest text-textMuted uppercase flex items-center gap-1.5 opacity-75">
+            <Sparkles className="w-3 h-3 text-primary animate-pulse" />
+            <span>Gulir perlahan untuk menelusuri kisah 3D</span>
+          </div>
         </div>
       </div>
     </section>
   );
 };
-

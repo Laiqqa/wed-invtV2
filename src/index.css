@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root,
+  .theme-bordeaux {
+    --color-paper: #FAF6F0;
+    --color-paper-warm: #F4EBE0;
+    --color-paper-card: #FFFDF9;
+    --color-border: #DDCFBC;
+    --color-primary: #85222B;
+    --color-primary-dark: #62141C;
+    --color-primary-light: #FDF1F0;
+    --color-accent: #C48232;
+    --color-accent-light: #FBF4E8;
+    --color-text-main: #1D1514;
+    --color-text-muted: #6B5B53;
+    --wax-color-1: #A82820;
+    --wax-color-2: #6E120D;
+  }
+
+  .theme-emerald {
+    --color-paper: #F6F9F5;
+    --color-paper-warm: #EAF2E7;
+    --color-paper-card: #FCFDFB;
+    --color-border: #C8D8C4;
+    --color-primary: #1C4D38;
+    --color-primary-dark: #113425;
+    --color-primary-light: #EEF6F1;
+    --color-accent: #C59728;
+    --color-accent-light: #FBF5E6;
+    --color-text-main: #121F17;
+    --color-text-muted: #526759;
+    --wax-color-1: #235A42;
+    --wax-color-2: #102F21;
+  }
+
+  .theme-indigo {
+    --color-paper: #F6F8FC;
+    --color-paper-warm: #E8EEF7;
+    --color-paper-card: #FDFEFF;
+    --color-border: #C6D4E5;
+    --color-primary: #1B355B;
+    --color-primary-dark: #11233E;
+    --color-primary-light: #EFF4FC;
+    --color-accent: #CF9E38;
+    --color-accent-light: #FBF6EA;
+    --color-text-main: #121A24;
+    --color-text-muted: #536277;
+    --wax-color-1: #24446F;
+    --wax-color-2: #10233D;
+  }
+
+  .theme-terracotta {
+    --color-paper: #FAF5EE;
+    --color-paper-warm: #F2E8DC;
+    --color-paper-card: #FFFCF7;
+    --color-border: #E0CDB8;
+    --color-primary: #A2422C;
+    --color-primary-dark: #7A2E1C;
+    --color-primary-light: #FDF2EF;
+    --color-accent: #596B4F;
+    --color-accent-light: #F1F5EE;
+    --color-text-main: #221A16;
+    --color-text-muted: #6D5E54;
+    --wax-color-1: #B04B34;
+    --wax-color-2: #722716;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-text-main);
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  /* Paper grain overlay */
+  .bg-paper-grain {
+    background-image: radial-gradient(rgba(44, 38, 28, 0.05) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  /* Smooth scroll container */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Accessible focus indicators conforming to WCAG */
+  *:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+/* Vinyl Record Grooves Gradient & Shine */
+.vinyl-grooves {
+  background: repeating-radial-gradient(
+    circle at center,
+    #181818 0px,
+    #181818 2px,
+    #252525 3px,
+    #181818 4px
+  );
+}
+
+.vinyl-sheen {
+  background: conic-gradient(
+    from 45deg at 50% 50%,
+    rgba(255, 255, 255, 0.12) 0deg,
+    rgba(255, 255, 255, 0.01) 45deg,
+    rgba(255, 255, 255, 0.15) 90deg,
+    rgba(255, 255, 255, 0.01) 135deg,
+    rgba(255, 255, 255, 0.12) 180deg,
+    rgba(255, 255, 255, 0.01) 225deg,
+    rgba(255, 255, 255, 0.15) 270deg,
+    rgba(255, 255, 255, 0.01) 315deg,
+    rgba(255, 255, 255, 0.12) 360deg
+  );
+}
+
+/* Custom delicate scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper-warm);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}

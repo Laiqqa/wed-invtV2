@@ -16,6 +16,8 @@ import { VintageBackgroundPattern } from './components/common/VintageBackgroundP
 import { VintageDivider } from './components/common/VintageDivider';
 import { AmbientButterflies } from './components/common/AmbientButterflies';
 import { Scroll3DStory } from './components/story/Scroll3DStory';
+import { GuestTicketPass } from './components/ticket/GuestTicketPass';
+import { EventRundown } from './components/itinerary/EventRundown';
 import { weddingData } from './data/weddingData';
 import type { RsvpData } from './types/wedding';
 
@@ -106,6 +108,12 @@ export function App() {
         {/* Vintage Divider */}
         <VintageDivider />
 
+        {/* VIP Guest Ticket Pass / E-Ticket */}
+        <GuestTicketPass guestName={guestName} pax={pax} />
+
+        {/* Vintage Divider */}
+        <VintageDivider />
+
         {/* Analog Turntable Music Player */}
         <section className="px-4">
           <VinylTurntable autoPlayTrigger={isOpened} />
@@ -134,6 +142,12 @@ export function App() {
 
         {/* Event Schedule (Akad & Resepsi) */}
         <EventDetails />
+
+        {/* Vintage Divider */}
+        <VintageDivider />
+
+        {/* Day-of Event Rundown & Logistics / Parking Guide */}
+        <EventRundown />
 
         {/* Vintage Divider */}
         <VintageDivider />

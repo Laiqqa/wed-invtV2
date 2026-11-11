@@ -132,6 +132,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ guestName }) => {
       >
         <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-mono text-linen-700">
           <a
+            href="#tiket"
+            className="px-3.5 py-1.5 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-900 transition-colors border border-amber-300 font-semibold shadow-xs"
+          >
+            VIP Pass
+          </a>
+          <a
             href="#mempelai"
             className="px-3.5 py-1.5 rounded-full bg-linen-100 hover:bg-linen-200 transition-colors border border-linen-300"
           >
@@ -141,17 +147,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ guestName }) => {
             href="#acara"
             className="px-3.5 py-1.5 rounded-full bg-linen-100 hover:bg-linen-200 transition-colors border border-linen-300"
           >
-            Jadwal Acara
+            Lokasi
           </a>
           <a
-            href="#kisah"
+            href="#rundown"
             className="px-3.5 py-1.5 rounded-full bg-linen-100 hover:bg-linen-200 transition-colors border border-linen-300"
           >
-            Kisah Cinta
+            Rundown Hari-H
           </a>
           <a
             href="#rsvp"
-            className="px-3.5 py-1.5 rounded-full bg-terracotta-600 text-linen-50 hover:bg-terracotta-700 transition-colors shadow-sm"
+            className="px-3.5 py-1.5 rounded-full bg-primary text-linen-50 hover:opacity-90 transition-opacity shadow-sm font-semibold"
           >
             Konfirmasi RSVP
           </a>

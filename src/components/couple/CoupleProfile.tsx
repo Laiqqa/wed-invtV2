@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { weddingData } from '../../data/weddingData';
 import { PerchedButterfly } from '../common/PerchedButterfly';
+import { Text3DMotion } from '../common/Text3DMotion';
 
 export const CoupleProfile: React.FC = () => {
   const { groom, bride } = weddingData.couple;
@@ -143,7 +144,7 @@ export const CoupleProfile: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Quote Banner in Warm Atelier Box */}
+      {/* Quote Banner in Warm Atelier Box with 3D Word Motion */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -151,10 +152,13 @@ export const CoupleProfile: React.FC = () => {
         transition={{ duration: 0.8 }}
         className="mt-16 p-8 sm:p-10 bg-linen-100 border border-linen-300/80 rounded-2xl text-center relative max-w-2xl mx-auto shadow-paper"
       >
-        <div className="font-serif italic text-base sm:text-lg text-noir-800 leading-relaxed">
-          "{weddingData.quote.text}"
-        </div>
-        <div className="mt-3 text-xs font-mono text-primary uppercase tracking-widest">
+        <Text3DMotion
+          text={weddingData.quote.text}
+          className="font-serif italic text-base sm:text-xl text-noir-800 leading-relaxed"
+          highlightWords={['thousand', 'love', 'loves']}
+          highlightClass="text-primary font-semibold"
+        />
+        <div className="mt-4 text-xs font-mono text-primary uppercase tracking-widest">
           — {weddingData.quote.source}
         </div>
       </motion.div>

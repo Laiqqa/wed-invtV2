@@ -15,6 +15,7 @@ import type { ThemeName } from './components/theme/ThemePalettePicker';
 import { VintageBackgroundPattern } from './components/common/VintageBackgroundPattern';
 import { VintageDivider } from './components/common/VintageDivider';
 import { AmbientButterflies } from './components/common/AmbientButterflies';
+import { Scroll3DStory } from './components/story/Scroll3DStory';
 import { weddingData } from './data/weddingData';
 import type { RsvpData } from './types/wedding';
 
@@ -105,10 +106,16 @@ export function App() {
         {/* Vintage Divider */}
         <VintageDivider />
 
-        {/* Analog Turntable Music Player (Sorai - Nadin Amizah) */}
+        {/* Analog Turntable Music Player */}
         <section className="px-4">
           <VinylTurntable autoPlayTrigger={isOpened} />
         </section>
+
+        {/* Vintage Divider */}
+        <VintageDivider />
+
+        {/* Cinematic 3D Scroll Narrative Section */}
+        <Scroll3DStory />
 
         {/* Vintage Divider */}
         <VintageDivider />

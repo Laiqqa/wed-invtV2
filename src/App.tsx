@@ -107,66 +107,66 @@ export function App() {
         <HeroSection guestName={guestName} />
 
         {/* Vintage Divider */}
-        <VintageDivider className="my-8" />
+        <VintageDivider className="my-2 sm:my-3" />
 
         {/* VIP Guest Ticket Pass / E-Ticket */}
-        <Scroll3DSection depth={36} maxRotate={4}>
+        <Scroll3DSection depth={20} maxRotate={2.5}>
           <GuestTicketPass guestName={guestName} pax={pax} />
         </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider className="my-8" />
+        <VintageDivider className="my-2 sm:my-3" />
 
         {/* Analog Turntable Music Player */}
-        <Scroll3DSection depth={32} maxRotate={3.5}>
+        <Scroll3DSection depth={20} maxRotate={2.5}>
           <section className="px-4">
             <VinylTurntable autoPlayTrigger={isOpened} />
           </section>
         </Scroll3DSection>
 
         {/* Vintage Divider with reduced tight gap */}
-        <VintageDivider className="my-3" />
+        <VintageDivider className="my-2 sm:my-3" />
 
-        {/* Cinematic 3D Scroll Narrative Section */}
+        {/* Kinetic 3D Chapter Narrative Section */}
         <Scroll3DStory />
 
         {/* Vintage Divider with reduced tight gap */}
-        <VintageDivider className="my-3" />
+        <VintageDivider className="my-2 sm:my-3" />
 
         {/* Couple Profile */}
-        <Scroll3DSection depth={40} maxRotate={4}>
+        <Scroll3DSection depth={20} maxRotate={2.5}>
           <CoupleProfile />
         </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider className="my-8" />
+        <VintageDivider className="my-2 sm:my-3" />
 
         {/* Narrative Tracklist / Love Story */}
-        <Scroll3DSection depth={36} maxRotate={4}>
+        <Scroll3DSection depth={20} maxRotate={2.5}>
           <LoveStoryTimeline />
         </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider className="my-8" />
+        <VintageDivider className="my-2 sm:my-3" />
 
         {/* Event Schedule (Akad & Resepsi) */}
-        <Scroll3DSection depth={40} maxRotate={4}>
+        <Scroll3DSection depth={20} maxRotate={2.5}>
           <EventDetails />
         </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider className="my-8" />
+        <VintageDivider className="my-2 sm:my-3" />
 
         {/* Day-of Event Rundown & Logistics / Parking Guide */}
-        <Scroll3DSection depth={40} maxRotate={4}>
+        <Scroll3DSection depth={20} maxRotate={2.5}>
           <EventRundown />
         </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider className="my-8" />
+        <VintageDivider className="my-2 sm:my-3" />
 
         {/* Interactive RSVP */}
-        <Scroll3DSection depth={36} maxRotate={4}>
+        <Scroll3DSection depth={20} maxRotate={2.5}>
           <RsvpSection
             initialGuestName={guestName === 'Tamu Terhormat' ? '' : guestName}
             onNewRsvpAdded={handleNewRsvp}
@@ -174,25 +174,23 @@ export function App() {
         </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider className="my-8" />
+        <VintageDivider className="my-2 sm:my-3" />
 
         {/* Dinding Doa & Ucapan */}
-        <Scroll3DSection depth={32} maxRotate={3.5}>
+        <Scroll3DSection depth={20} maxRotate={2.5}>
           <WishesWall wishes={wishes} />
         </Scroll3DSection>
 
         {/* Vintage Divider */}
-        <VintageDivider className="my-8" />
+        <VintageDivider className="my-2 sm:my-3" />
 
         {/* Amplop Digital & QRIS */}
-        <Scroll3DSection depth={36} maxRotate={4}>
+        <Scroll3DSection depth={20} maxRotate={2.5}>
           <WeddingGift />
         </Scroll3DSection>
 
-        {/* Footer */}
-        <Scroll3DSection depth={28} maxRotate={3}>
-          <WeddingFooter />
-        </Scroll3DSection>
+        {/* Full-Width Footer */}
+        <WeddingFooter />
       </main>
     </div>
   );

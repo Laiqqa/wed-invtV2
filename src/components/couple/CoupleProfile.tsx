@@ -8,9 +8,9 @@ export const CoupleProfile: React.FC = () => {
   const { groom, bride } = weddingData.couple;
 
   return (
-    <section id="mempelai" className="py-20 px-4 sm:px-6 max-w-5xl mx-auto scroll-mt-10">
+    <section id="mempelai" className="py-6 sm:py-8 px-4 sm:px-6 max-w-5xl mx-auto scroll-mt-10">
       {/* Section Header */}
-      <div className="text-center max-w-xl mx-auto mb-16 space-y-3">
+      <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
         <span className="text-xs font-mono uppercase tracking-[0.25em] text-linen-600">
           The Bride &amp; Groom
         </span>

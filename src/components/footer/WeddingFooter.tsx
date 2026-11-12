@@ -80,14 +80,14 @@ export const WeddingFooter: React.FC = () => {
     weddingData.playlist.find((t) => t.id === currentTrackId) || weddingData.playlist[0];
 
   return (
-    <footer className="relative pt-24 pb-28 px-4 sm:px-6 bg-gradient-to-b from-noir-900 via-[#181615] to-[#0d0c0c] text-linen-100 overflow-hidden select-none border-t border-linen-800/40">
+    <footer className="w-full relative pt-16 sm:pt-20 pb-20 sm:pb-24 px-4 sm:px-8 lg:px-12 bg-gradient-to-b from-noir-900 via-[#181615] to-[#0d0c0c] text-linen-100 overflow-hidden select-none border-t border-linen-800/40">
       {/* 1. Subtle Paper Grain & Warm Golden Radial Ambient Atmosphere */}
       <div className="absolute inset-0 bg-paper-grain opacity-25 pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 right-10 w-[400px] h-[400px] bg-accent/8 rounded-full blur-[120px] pointer-events-none" />
 
       {/* 2. Top Perimeter Resting Butterfly & Monogram Medallion */}
-      <div className="relative max-w-4xl mx-auto flex flex-col items-center mb-16">
+      <div className="relative max-w-5xl mx-auto flex flex-col items-center mb-12">
         <div className="relative group">
           <PerchedButterfly color="vintage-amber" size={32} rotation={15} className="-top-7 -right-6 z-20" />
           <motion.div
@@ -114,7 +114,7 @@ export const WeddingFooter: React.FC = () => {
       </div>
 
       {/* 3. Main Center Content: Benediction Letter + Concentric Vinyl Run-out Groove */}
-      <div className="relative max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-16">
+      <div className="relative max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-12">
         {/* Left: Deep Heartfelt Closing Letter (7 cols) */}
         <div className="lg:col-span-7 bg-noir-800/60 border border-linen-800/80 rounded-3xl p-6 sm:p-8 backdrop-blur-md relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
@@ -193,7 +193,7 @@ export const WeddingFooter: React.FC = () => {
       </div>
 
       {/* 4. Interactive Music Controller Bar in Footer */}
-      <div className="relative max-w-4xl mx-auto mb-16 bg-noir-800/80 border border-linen-800 rounded-2xl p-4 sm:p-5 backdrop-blur-md shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="relative max-w-5xl mx-auto mb-10 bg-noir-800/80 border border-linen-800 rounded-2xl p-4 sm:p-5 backdrop-blur-md shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3.5 w-full sm:w-auto">
           <div className="w-10 h-10 rounded-full bg-noir-900 border border-primary/40 flex items-center justify-center text-primary shrink-0">
             <Disc className={`w-5 h-5 ${isPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '4s' }} />
@@ -283,7 +283,7 @@ export const WeddingFooter: React.FC = () => {
       </div>
 
       {/* 5. Interactive Keepsake & Social Hub: Hashtag, WhatsApp, Coordinates */}
-      <div className="relative max-w-4xl mx-auto mb-16 grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="relative max-w-5xl mx-auto mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Hashtag Card */}
         <div className="bg-noir-800/40 border border-linen-800 rounded-2xl p-4 flex flex-col justify-between gap-3">
           <div>
@@ -358,7 +358,7 @@ export const WeddingFooter: React.FC = () => {
       </div>
 
       {/* 6. Liner Notes Colophon (Vintage Vinyl Credits) */}
-      <div className="relative max-w-4xl mx-auto pt-8 border-t border-linen-800/70">
+      <div className="relative max-w-5xl mx-auto pt-8 border-t border-linen-800/70">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-[11px] font-mono text-linen-500 mb-8">
           <div>
             <span className="text-linen-400 uppercase tracking-wider block mb-1">

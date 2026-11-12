@@ -40,7 +40,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ guestName }) => {
   }, []);
 
   return (
-    <section className="relative min-h-[92vh] flex flex-col items-center justify-between pt-12 pb-16 px-4 text-center overflow-hidden">
+    <section className="relative min-h-[85vh] flex flex-col items-center justify-between pt-8 sm:pt-10 pb-8 sm:pb-12 px-4 text-center overflow-hidden">
       {/* Background Subtle Gradient & Paper Texture */}
       <div className="absolute inset-0 bg-paper-grain opacity-35 pointer-events-none" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-terracotta-500/5 rounded-full blur-[140px] pointer-events-none" />

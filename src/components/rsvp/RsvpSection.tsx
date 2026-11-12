@@ -58,8 +58,8 @@ export const RsvpSection: React.FC<RsvpSectionProps> = ({ initialGuestName, onNe
   };
 
   return (
-    <section id="rsvp" className="py-20 px-4 sm:px-6 max-w-3xl mx-auto scroll-mt-10">
-      <div className="text-center max-w-xl mx-auto mb-14 space-y-3">
+    <section id="rsvp" className="py-6 sm:py-8 px-4 sm:px-6 max-w-3xl mx-auto scroll-mt-10">
+      <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
         <span className="text-xs font-mono uppercase tracking-[0.25em] text-linen-600">
           RSVP & Confirmation
         </span>

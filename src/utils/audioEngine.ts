@@ -18,7 +18,7 @@ class AudioEngine {
   private currentStep: number = 0;
   private audioElement: HTMLAudioElement | null = null;
   private isUsingAudioElement: boolean = false;
-  private currentTrackId: string = 'song-all-of-me';
+  private currentTrackId: string = 'song-die-with-a-smile';
   private volume: number = 0.75;
   private subscribers: Set<AudioSubscriber> = new Set();
   private hasUnlocked: boolean = false;
@@ -152,7 +152,7 @@ class AudioEngine {
   /**
    * Start music with support for audio files or romantic acoustic synthesizer
    */
-  public startMusic(audioSrc?: string, trackId: string = 'song-all-of-me') {
+  public startMusic(audioSrc?: string, trackId: string = 'song-die-with-a-smile') {
     this.unlockContext();
     this.currentTrackId = trackId;
 
@@ -211,30 +211,32 @@ class AudioEngine {
 
   // Musical note table (frequencies in Hz)
   private readonly notes: Record<string, number> = {
-    E2: 82.41, G2: 98.00, A2: 110.00, B2: 123.47,
-    C3: 130.81, D3: 146.83, E3: 164.81, Fs3: 185.00, G3: 196.00, A3: 220.00, B3: 246.94,
+    F1: 43.65, G1: 49.00, A1: 55.00, B1: 61.74,
+    C2: 65.41, D2: 73.42, E2: 82.41, F2: 87.31, G2: 98.00, A2: 110.00, B2: 123.47,
+    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, Fs3: 185.00, G3: 196.00, A3: 220.00, B3: 246.94,
     C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.00, A4: 440.00, B4: 493.88,
-    C5: 523.25, D5: 587.33, E5: 659.25, Fs5: 739.99, G5: 783.99, A5: 880.00, B5: 987.77,
+    C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, Fs5: 739.99, G5: 783.99, A5: 880.00, B5: 987.77,
   };
 
   // Polyphonic pattern sequences: [Chords], [Melody Notes]
   private scheduleNotes = () => {
     if (!this.isPlaying || !this.ctx || !this.masterGain || this.isUsingAudioElement) return;
 
-    const isAllOfMe = this.currentTrackId === 'song-all-of-me';
+    const isDieWithASmile = this.currentTrackId === 'song-die-with-a-smile';
 
-    // Iconic chords & melody steps
-    const chordProgressionAllOfMe = [
-      { bass: this.notes.E2, chord: [this.notes.G3, this.notes.B3, this.notes.E4], mel: this.notes.G4 },
-      { bass: this.notes.C3, chord: [this.notes.G3, this.notes.C4, this.notes.E4], mel: this.notes.Fs4 },
+    // "Die With a Smile" - Lady Gaga & Bruno Mars (Fmaj7 - G - Em7 - Am7)
+    const chordProgressionDieWithASmile = [
+      { bass: this.notes.F2, chord: [this.notes.A3, this.notes.C4, this.notes.E4], mel: this.notes.F4 },
       { bass: this.notes.G2, chord: [this.notes.B3, this.notes.D4, this.notes.G4], mel: this.notes.G4 },
-      { bass: this.notes.D3, chord: [this.notes.Fs3, this.notes.A3, this.notes.D4], mel: this.notes.B4 },
-      { bass: this.notes.E2, chord: [this.notes.G3, this.notes.B3, this.notes.E4], mel: this.notes.D5 },
-      { bass: this.notes.C3, chord: [this.notes.G3, this.notes.C4, this.notes.E4], mel: this.notes.C5 },
-      { bass: this.notes.G2, chord: [this.notes.B3, this.notes.D4, this.notes.G4], mel: this.notes.B4 },
-      { bass: this.notes.D3, chord: [this.notes.Fs3, this.notes.A3, this.notes.D4], mel: this.notes.A4 },
+      { bass: this.notes.E2, chord: [this.notes.G3, this.notes.B3, this.notes.E4], mel: this.notes.A4 },
+      { bass: this.notes.A2, chord: [this.notes.C4, this.notes.E4, this.notes.G4], mel: this.notes.G4 },
+      { bass: this.notes.F2, chord: [this.notes.A3, this.notes.C4, this.notes.E4], mel: this.notes.E4 },
+      { bass: this.notes.G2, chord: [this.notes.B3, this.notes.D4, this.notes.G4], mel: this.notes.D4 },
+      { bass: this.notes.C2, chord: [this.notes.G3, this.notes.C4, this.notes.E4], mel: this.notes.C4 },
+      { bass: this.notes.A2, chord: [this.notes.C4, this.notes.E4, this.notes.G4], mel: this.notes.C5 },
     ];
 
+    // "A Thousand Years" - Christina Perri
     const chordProgressionAThousandYears = [
       { bass: this.notes.C3, chord: [this.notes.G3, this.notes.C4, this.notes.E4], mel: this.notes.E4 },
       { bass: this.notes.B2, chord: [this.notes.G3, this.notes.D4, this.notes.G4], mel: this.notes.G4 },
@@ -246,7 +248,7 @@ class AudioEngine {
       { bass: this.notes.G2, chord: [this.notes.D3, this.notes.B3, this.notes.D4], mel: this.notes.G4 },
     ];
 
-    const currentSequence = isAllOfMe ? chordProgressionAllOfMe : chordProgressionAThousandYears;
+    const currentSequence = isDieWithASmile ? chordProgressionDieWithASmile : chordProgressionAThousandYears;
     const step = currentSequence[this.currentStep % currentSequence.length];
 
     const now = this.ctx.currentTime;
@@ -263,7 +265,7 @@ class AudioEngine {
     this.playTone(step.mel, now + 0.18, 1.6, 0.55, 'triangle');
 
     this.currentStep++;
-    const stepDelay = isAllOfMe ? 750 : 850;
+    const stepDelay = isDieWithASmile ? 760 : 850;
     this.timerId = window.setTimeout(this.scheduleNotes, stepDelay);
   };
 

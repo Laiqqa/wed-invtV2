@@ -34,8 +34,8 @@ export const GuestTicketPass: React.FC<GuestTicketPassProps> = ({ guestName, pax
   };
 
   return (
-    <section id="tiket" className="py-20 px-4 sm:px-6 max-w-4xl mx-auto scroll-mt-10 select-none">
-      <div className="text-center max-w-xl mx-auto mb-14 space-y-3">
+    <section id="tiket" className="py-6 sm:py-8 px-4 sm:px-6 max-w-4xl mx-auto scroll-mt-10 select-none">
+      <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
         <span className="text-xs font-mono uppercase tracking-[0.25em] text-linen-600">
           VIP Guest Entry Pass
         </span>

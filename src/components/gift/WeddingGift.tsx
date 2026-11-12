@@ -17,8 +17,8 @@ export const WeddingGift: React.FC = () => {
   };
 
   return (
-    <section id="tanda-kasih" className="py-20 px-4 sm:px-6 max-w-4xl mx-auto scroll-mt-10">
-      <div className="text-center max-w-xl mx-auto mb-14 space-y-3">
+    <section id="tanda-kasih" className="py-6 sm:py-8 px-4 sm:px-6 max-w-4xl mx-auto scroll-mt-10">
+      <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
         <span className="text-xs font-mono uppercase tracking-[0.25em] text-linen-600">
           Wedding Gift & Registry
         </span>

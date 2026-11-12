@@ -4,7 +4,7 @@ interface VintageDividerProps {
   className?: string;
 }
 
-export const VintageDivider: React.FC<VintageDividerProps> = ({ className = 'my-12' }) => {
+export const VintageDivider: React.FC<VintageDividerProps> = ({ className = 'my-3 sm:my-4' }) => {
   return (
     <div className={`flex items-center justify-center gap-3 max-w-sm mx-auto select-none pointer-events-none opacity-60 ${className}`}>
       {/* Left ornate line */}

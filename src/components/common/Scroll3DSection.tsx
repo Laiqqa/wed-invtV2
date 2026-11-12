@@ -16,8 +16,8 @@ interface Scroll3DSectionProps {
 export const Scroll3DSection: React.FC<Scroll3DSectionProps> = ({
   children,
   className = '',
-  depth = 36,
-  maxRotate = 4.5,
+  depth = 20,
+  maxRotate = 3,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -28,8 +28,8 @@ export const Scroll3DSection: React.FC<Scroll3DSectionProps> = ({
 
   // Smooth out scroll progress with spring physics for luxurious weighted momentum
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 90,
-    damping: 24,
+    stiffness: 100,
+    damping: 26,
     restDelta: 0.001,
   });
 
@@ -39,7 +39,6 @@ export const Scroll3DSection: React.FC<Scroll3DSectionProps> = ({
   // 1.0 = Bottom of element touches top of screen (leaving)
   const rotateX = useTransform(smoothProgress, [0, 0.5, 1], [`${maxRotate}deg`, '0deg', `-${maxRotate}deg`]);
   const translateZ = useTransform(smoothProgress, [0, 0.5, 1], [-depth, 0, -depth]);
-  const scale = useTransform(smoothProgress, [0, 0.5, 1], [0.97, 1, 0.97]);
 
   return (
     <div
@@ -51,7 +50,6 @@ export const Scroll3DSection: React.FC<Scroll3DSectionProps> = ({
         style={{
           rotateX,
           translateZ,
-          scale,
           transformStyle: 'preserve-3d',
         }}
         className="w-full"
@@ -61,3 +59,4 @@ export const Scroll3DSection: React.FC<Scroll3DSectionProps> = ({
     </div>
   );
 };
+

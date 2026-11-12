@@ -34,8 +34,8 @@ export const weddingData: {
     },
   },
   quote: {
-    text: 'Cause all of me loves all of you. I have loved you for a thousand years, and I will love you for a thousand more.',
-    source: 'John Legend & Christina Perri',
+    text: "If the world was ending, I'd wanna be next to you. If the party was over and our time on Earth was through, I'd wanna hold you just for a while and die with a smile.",
+    source: 'Lady Gaga & Bruno Mars (Die With a Smile)',
   },
   events: [
     {
@@ -183,14 +183,14 @@ export const weddingData: {
   ],
   playlist: [
     {
-      id: 'song-all-of-me',
-      title: 'All of Me',
-      artist: 'John Legend',
+      id: 'song-die-with-a-smile',
+      title: 'Die With a Smile',
+      artist: 'Lady Gaga & Bruno Mars',
       side: 'A',
-      album: 'Side A • The Sacred Vow (Acoustic Vinyl)',
-      year: '2013 / 2026 Edition',
-      duration: '4:29',
-      src: '/audio/all-of-me.mp3',
+      album: 'Side A • The Sacred Vow (Vinyl Edition)',
+      year: '2024 / 2026 Atelier Master',
+      duration: '4:11',
+      src: '/audio/die-with-a-smile.mp3',
     },
     {
       id: 'song-a-thousand-years',

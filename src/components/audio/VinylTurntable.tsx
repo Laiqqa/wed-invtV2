@@ -89,7 +89,7 @@ export const VinylTurntable: React.FC<VinylTurntableProps> = ({ autoPlayTrigger 
     <>
       {/* Main Feature Turntable Box with 3D Perspective */}
       <div
-        className="w-full max-w-xl mx-auto my-8 select-none"
+        className="w-full max-w-xl mx-auto my-3 sm:my-5 select-none"
         style={{ perspective: 1000 }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}

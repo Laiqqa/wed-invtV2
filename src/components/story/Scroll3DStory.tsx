@@ -1,218 +1,218 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { Sparkles, Heart } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import { VintageButterfly } from '../common/VintageButterfly';
 
 interface StoryScene {
   tag: string;
+  actNumber: string;
   line1: string;
   line2: string;
   subtext: string;
-  butterflyColor: 'antique-gold' | 'dusty-rose' | 'vintage-amber' | 'bordeaux-velvet';
+  butterflyColor: 'antique-gold' | 'dusty-rose' | 'vintage-amber';
 }
 
 const scenes: StoryScene[] = [
   {
-    tag: 'BABAK I • PERJALANAN WAKTU',
+    actNumber: 'BABAK I',
+    tag: 'Perjalanan Waktu',
     line1: 'Di antara miliaran kemungkinan di semesta,',
     line2: 'dua cerita memilih untuk saling menemukan.',
-    subtext: 'Bukan karena kebetulan, melainkan takdir yang sabar menunggu.',
+    subtext: 'Bukan karena kebetulan, melainkan takdir yang sabar menunggu dalam setiap detik waktu.',
     butterflyColor: 'antique-gold',
   },
   {
-    tag: 'BABAK II • TENTANG RUMAH',
+    actNumber: 'BABAK II',
+    tag: 'Tentang Rumah',
     line1: 'Kami belajar bahwa rumah bukanlah sebuah tempat,',
     line2: 'melainkan keberadaan satu sama lain.',
-    subtext: 'Di mana setiap tawa menjadi pelindung, dan setiap tatap menjadi kepulangan.',
+    subtext: 'Di mana setiap tawa menjadi pelindung, dan setiap tatap menjadi sebuah kepulangan.',
     butterflyColor: 'dusty-rose',
   },
   {
-    tag: 'BABAK III • SATU JANJI',
+    actNumber: 'BABAK III',
+    tag: 'Satu Janji',
     line1: 'Karena seluruh diriku mencintai seluruh dirimu,',
     line2: 'kemarin, hari ini, dan untuk seribu tahun lagi.',
-    subtext: 'Tom Holland & Zendaya • 12.12.2026',
+    subtext: 'Thomas Stanley Holland & Zendaya Maree Coleman • 12.12.2026',
     butterflyColor: 'vintage-amber',
   },
 ];
 
 export const Scroll3DStory: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState<number>(0);
+  const [direction, setDirection] = useState<number>(1);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  });
+  // Auto-advance gently every 7 seconds if not manually interacted with recently
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDirection(1);
+      setActiveIdx((prev) => (prev + 1) % scenes.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, []);
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 24,
-    restDelta: 0.001,
-  });
+  const handleSelect = (idx: number) => {
+    setDirection(idx > activeIdx ? 1 : -1);
+    setActiveIdx(idx);
+  };
 
-  // Scene 1: Already visible from the start so there's zero empty gap, fades out at ~0.35
-  const opacity1 = useTransform(smoothProgress, [0.0, 0.28, 0.36], [1, 1, 0]);
-  const scale1 = useTransform(smoothProgress, [0.0, 0.15, 0.36], [1, 1, 1.08]);
-  const rotateX1 = useTransform(smoothProgress, [0.0, 0.15, 0.36], ['0deg', '0deg', '-16deg']);
-  const z1 = useTransform(smoothProgress, [0.0, 0.15, 0.36], [0, 0, 80]);
+  const handlePrev = () => {
+    setDirection(-1);
+    setActiveIdx((prev) => (prev === 0 ? scenes.length - 1 : prev - 1));
+  };
 
-  // Scene 2: Cross-fades seamlessly with Scene 1, stays centered, fades out at ~0.70
-  const opacity2 = useTransform(smoothProgress, [0.30, 0.38, 0.62, 0.70], [0, 1, 1, 0]);
-  const scale2 = useTransform(smoothProgress, [0.30, 0.48, 0.70], [0.92, 1, 1.08]);
-  const rotateX2 = useTransform(smoothProgress, [0.30, 0.48, 0.70], ['16deg', '0deg', '-16deg']);
-  const z2 = useTransform(smoothProgress, [0.30, 0.48, 0.70], [-80, 0, 80]);
+  const handleNext = () => {
+    setDirection(1);
+    setActiveIdx((prev) => (prev + 1) % scenes.length);
+  };
 
-  // Scene 3: Cross-fades seamlessly with Scene 2, stays until the end of the narrative act
-  const opacity3 = useTransform(smoothProgress, [0.64, 0.72, 1.0], [0, 1, 1]);
-  const scale3 = useTransform(smoothProgress, [0.64, 0.78, 1.0], [0.92, 1, 1]);
-  const rotateX3 = useTransform(smoothProgress, [0.64, 0.78, 1.0], ['16deg', '0deg', '0deg']);
-  const z3 = useTransform(smoothProgress, [0.64, 0.78, 1.0], [-80, 0, 0]);
+  const current = scenes[activeIdx];
 
-  // Progress bar indicator
-  const progressWidth = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
+  const variants = {
+    enter: (dir: number) => ({
+      opacity: 0,
+      rotateX: dir > 0 ? 15 : -15,
+      y: dir > 0 ? 30 : -30,
+      scale: 0.94,
+      z: -60,
+    }),
+    center: {
+      opacity: 1,
+      rotateX: 0,
+      y: 0,
+      scale: 1,
+      z: 0,
+      transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const },
+    },
+    exit: (dir: number) => ({
+      opacity: 0,
+      rotateX: dir > 0 ? -15 : 15,
+      y: dir > 0 ? -30 : 30,
+      scale: 0.94,
+      z: -60,
+      transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
+    }),
+  };
 
   return (
-    <section
-      ref={containerRef}
-      className="relative h-[165vh] w-full select-none my-2"
-    >
-      {/* Compact Sticky 3D Viewport without overly large vertical gaps */}
+    <section id="kisah-3d" className="py-8 sm:py-12 px-4 sm:px-6 max-w-4xl mx-auto select-none">
+      {/* Section Header */}
+      <div className="text-center max-w-xl mx-auto mb-6 sm:mb-8 space-y-2">
+        <span className="text-xs font-mono uppercase tracking-[0.25em] text-linen-600 flex items-center justify-center gap-1.5">
+          <BookOpen className="w-3.5 h-3.5 text-primary" />
+          The Kinetic 3D Story
+        </span>
+        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-noir-900 font-normal">
+          Narasi Tiga Babak Cinta
+        </h2>
+        <div className="w-12 h-0.5 bg-primary mx-auto mt-2" />
+      </div>
+
+      {/* Chapter Tab Selector (Babak I, II, III) */}
+      <div className="flex justify-center gap-2 mb-6">
+        {scenes.map((scene, idx) => {
+          const isActive = idx === activeIdx;
+          return (
+            <button
+              key={scene.actNumber}
+              onClick={() => handleSelect(idx)}
+              className={`px-3.5 sm:px-5 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+                isActive
+                  ? 'bg-noir-900 text-linen-100 shadow-md font-medium scale-105'
+                  : 'bg-linen-100 text-noir-700 hover:bg-linen-200 border border-linen-300'
+              }`}
+            >
+              <span>{scene.actNumber}</span>
+              <span className="hidden sm:inline opacity-70">• {scene.tag}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Main 3D Card Stage with No Empty Gap */}
       <div
-        className="sticky top-[10vh] min-h-[440px] max-h-[75vh] h-[65vh] w-full flex flex-col items-center justify-center overflow-hidden px-4"
-        style={{ perspective: 1200 }}
+        className="relative w-full bg-linen-100/95 border border-linen-300/90 rounded-3xl p-6 sm:p-10 shadow-paper-lg overflow-hidden backdrop-blur-sm"
+        style={{ perspective: 1000 }}
       >
-        {/* Subtle Background Glow Aura */}
-        <div className="absolute w-[500px] h-[350px] rounded-full bg-primary/8 blur-[120px] pointer-events-none" />
-        <div className="absolute w-[350px] h-[350px] rounded-full bg-accent/7 blur-[100px] pointer-events-none" />
+        {/* Subtle radial aura & paper texture */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Ambient Paper Grain */}
-        <div className="absolute inset-0 bg-paper-grain opacity-30 pointer-events-none" />
-
-        {/* 3D Kinetic Text Container with tight, focused framing */}
-        <div
-          className="relative w-full max-w-3xl mx-auto text-center h-[280px] sm:h-[300px] flex items-center justify-center"
-          style={{ transformStyle: 'preserve-3d' }}
-        >
-          {/* ================= SCENE 1 ================= */}
-          <motion.div
-            style={{
-              opacity: opacity1,
-              scale: scale1,
-              rotateX: rotateX1,
-              z: z1,
-              transformStyle: 'preserve-3d',
-            }}
-            className="absolute inset-0 flex flex-col items-center justify-center space-y-3 px-4 pointer-events-none"
-          >
-            <div className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-mono tracking-[0.25em] text-primary uppercase">
-              <Sparkles className="w-3 h-3 text-primary" />
-              <span>{scenes[0].tag}</span>
-            </div>
-
-            <div className="space-y-1">
-              <h3 className="font-serif text-2xl sm:text-4xl md:text-5xl text-textMain font-normal leading-tight tracking-wide">
-                {scenes[0].line1}
-              </h3>
-              <h3 className="font-serif italic text-2xl sm:text-4xl md:text-5xl text-primary font-normal leading-tight">
-                {scenes[0].line2}
-              </h3>
-            </div>
-
-            <p className="font-sans text-xs sm:text-sm text-textMuted max-w-md mx-auto pt-1 font-light leading-relaxed">
-              {scenes[0].subtext}
-            </p>
-
-            <div className="pt-2">
-              <VintageButterfly color={scenes[0].butterflyColor} size={32} />
-            </div>
-          </motion.div>
-
-          {/* ================= SCENE 2 ================= */}
-          <motion.div
-            style={{
-              opacity: opacity2,
-              scale: scale2,
-              rotateX: rotateX2,
-              z: z2,
-              transformStyle: 'preserve-3d',
-            }}
-            className="absolute inset-0 flex flex-col items-center justify-center space-y-3 px-4 pointer-events-none"
-          >
-            <div className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-accent/15 border border-accent/25 text-[10px] font-mono tracking-[0.25em] text-accent uppercase">
-              <Heart className="w-3 h-3 text-accent fill-accent/30" />
-              <span>{scenes[1].tag}</span>
-            </div>
-
-            <div className="space-y-1">
-              <h3 className="font-serif text-2xl sm:text-4xl md:text-5xl text-textMain font-normal leading-tight tracking-wide">
-                {scenes[1].line1}
-              </h3>
-              <h3 className="font-serif italic text-2xl sm:text-4xl md:text-5xl text-accent font-normal leading-tight">
-                {scenes[1].line2}
-              </h3>
-            </div>
-
-            <p className="font-sans text-xs sm:text-sm text-textMuted max-w-md mx-auto pt-1 font-light leading-relaxed">
-              {scenes[1].subtext}
-            </p>
-
-            <div className="pt-2">
-              <VintageButterfly color={scenes[1].butterflyColor} size={34} />
-            </div>
-          </motion.div>
-
-          {/* ================= SCENE 3 ================= */}
-          <motion.div
-            style={{
-              opacity: opacity3,
-              scale: scale3,
-              rotateX: rotateX3,
-              z: z3,
-              transformStyle: 'preserve-3d',
-            }}
-            className="absolute inset-0 flex flex-col items-center justify-center space-y-3 px-4 pointer-events-none"
-          >
-            <div className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-mono tracking-[0.25em] text-primary uppercase">
-              <Sparkles className="w-3 h-3 text-primary" />
-              <span>{scenes[2].tag}</span>
-            </div>
-
-            <div className="space-y-1">
-              <h3 className="font-serif text-2xl sm:text-4xl md:text-5xl text-textMain font-normal leading-tight tracking-wide">
-                {scenes[2].line1}
-              </h3>
-              <h3 className="font-serif italic text-2xl sm:text-4xl md:text-5xl text-primary font-normal leading-tight">
-                {scenes[2].line2}
-              </h3>
-            </div>
-
-            <div className="pt-2 flex flex-col items-center gap-1.5">
-              <div className="w-10 h-10 rounded-full border border-primary/30 flex items-center justify-center font-serif italic text-base text-primary bg-paper shadow-sm">
-                T&amp;Z
+        <div className="relative min-h-[220px] sm:min-h-[240px] flex items-center justify-center">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={activeIdx}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              style={{ transformStyle: 'preserve-3d' }}
+              className="text-center max-w-2xl mx-auto space-y-4"
+            >
+              {/* Badge Tag */}
+              <div className="inline-flex items-center gap-1.5 py-1 px-3.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-mono tracking-[0.25em] text-primary uppercase">
+                <Sparkles className="w-3 h-3 text-primary" />
+                <span>{current.actNumber} • {current.tag}</span>
               </div>
-              <span className="font-mono text-[11px] text-textMuted uppercase tracking-widest">
-                {scenes[2].subtext}
-              </span>
-            </div>
 
-            <div className="pt-1">
-              <VintageButterfly color={scenes[2].butterflyColor} size={36} />
-            </div>
-          </motion.div>
+              {/* Title Lines */}
+              <div className="space-y-1">
+                <h3 className="font-serif text-xl sm:text-3xl md:text-4xl text-textMain font-normal leading-snug">
+                  {current.line1}
+                </h3>
+                <h3 className="font-serif italic text-xl sm:text-3xl md:text-4xl text-primary font-normal leading-snug">
+                  {current.line2}
+                </h3>
+              </div>
+
+              {/* Subtext */}
+              <p className="font-sans text-xs sm:text-sm text-textMuted max-w-lg mx-auto font-light leading-relaxed">
+                {current.subtext}
+              </p>
+
+              {/* Butterfly Icon & Monogram */}
+              <div className="pt-2 flex items-center justify-center gap-3">
+                <div className="w-8 h-px bg-primary/30" />
+                <VintageButterfly color={current.butterflyColor} size={28} />
+                <div className="w-8 h-px bg-primary/30" />
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* Compact Bottom Progress Bar & Instruction right under the stage */}
-        <div className="mt-4 flex flex-col items-center gap-2">
-          <div className="w-44 sm:w-56 h-1 bg-borderSubtle/60 rounded-full overflow-hidden">
-            <motion.div
-              style={{ width: progressWidth }}
-              className="h-full bg-gradient-to-r from-primary via-accent to-primary"
-            />
+        {/* Navigation Controls (Prev / Next Arrows + Indicators) */}
+        <div className="mt-6 pt-4 border-t border-linen-200/80 flex items-center justify-between">
+          <button
+            onClick={handlePrev}
+            aria-label="Babak Sebelumnya"
+            className="p-2 rounded-full hover:bg-linen-200 text-noir-700 transition-colors cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="flex items-center gap-1.5">
+            {scenes.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => handleSelect(i)}
+                aria-label={`Ke babak ${i + 1}`}
+                className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                  i === activeIdx ? 'w-6 bg-primary' : 'w-1.5 bg-linen-400/60'
+                }`}
+              />
+            ))}
           </div>
 
-          <div className="text-[10px] font-mono tracking-widest text-textMuted uppercase flex items-center gap-1.5 opacity-75">
-            <Sparkles className="w-3 h-3 text-primary animate-pulse" />
-            <span>Gulir perlahan untuk menelusuri kisah 3D</span>
-          </div>
+          <button
+            onClick={handleNext}
+            aria-label="Babak Selanjutnya"
+            className="p-2 rounded-full hover:bg-linen-200 text-noir-700 transition-colors cursor-pointer"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </section>

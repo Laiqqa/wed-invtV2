@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Heart } from 'lucide-react';
 import { weddingData } from '../../data/weddingData';
 import { PerchedButterfly } from '../common/PerchedButterfly';
 import { Text3DMotion } from '../common/Text3DMotion';
@@ -23,8 +24,40 @@ export const CoupleProfile: React.FC = () => {
         </p>
       </div>
 
-      {/* Grid: Groom & Bride */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-start">
+      {/* Relative Container with Central Love Emblem */}
+      <div className="relative">
+        {/* Desktop Center Love Medallion */}
+        <div className="hidden md:flex absolute left-1/2 top-40 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center z-20 pointer-events-none">
+          <div className="w-px h-16 bg-gradient-to-b from-transparent via-primary/30 to-primary/80" />
+          
+          <motion.div
+            animate={{
+              scale: [1, 1.16, 1, 1.1, 1],
+              rotate: [0, -3, 3, 0],
+            }}
+            transition={{
+              duration: 2.2,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+            className="relative my-2.5"
+          >
+            {/* Ambient Heart Halo */}
+            <div className="absolute inset-0 rounded-full bg-primary/25 blur-md animate-pulse" />
+            
+            <div className="relative w-14 h-14 rounded-full bg-linen-100 border-2 border-primary/50 shadow-xl flex flex-col items-center justify-center text-primary">
+              <Heart className="w-7 h-7 fill-primary text-primary drop-shadow-sm" />
+            </div>
+          </motion.div>
+
+          <span className="font-serif italic text-xs text-primary font-bold tracking-widest mt-1">
+            &amp;
+          </span>
+          <div className="w-px h-16 bg-gradient-to-t from-transparent via-primary/30 to-primary/80" />
+        </div>
+
+        {/* Grid: Groom & Bride */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start">
         {/* The Groom Card */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -84,6 +117,19 @@ export const CoupleProfile: React.FC = () => {
           </div>
         </motion.div>
 
+        {/* Mobile Center Love Connector */}
+        <div className="flex md:hidden items-center justify-center gap-3 my-2">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-primary/30 to-primary/60" />
+          <motion.div
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-11 h-11 rounded-full bg-linen-100 border border-primary/40 shadow-md flex items-center justify-center text-primary"
+          >
+            <Heart className="w-5 h-5 fill-primary text-primary" />
+          </motion.div>
+          <div className="flex-1 h-px bg-gradient-to-l from-transparent via-primary/30 to-primary/60" />
+        </div>
+
         {/* The Bride Card */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -142,6 +188,7 @@ export const CoupleProfile: React.FC = () => {
             )}
           </div>
         </motion.div>
+        </div>
       </div>
 
       {/* Quote Banner in Warm Atelier Box with 3D Word Motion */}
@@ -150,15 +197,15 @@ export const CoupleProfile: React.FC = () => {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="mt-16 p-8 sm:p-10 bg-linen-100 border border-linen-300/80 rounded-2xl text-center relative max-w-2xl mx-auto shadow-paper"
+        className="mt-8 sm:mt-10 p-6 sm:p-8 bg-linen-100 border border-linen-300/80 rounded-2xl text-center relative max-w-2xl mx-auto shadow-paper"
       >
         <Text3DMotion
           text={weddingData.quote.text}
-          className="font-serif italic text-base sm:text-xl text-noir-800 leading-relaxed"
-          highlightWords={['thousand', 'love', 'loves']}
+          className="font-serif italic text-base sm:text-lg text-noir-800 leading-relaxed"
+          highlightWords={['world', 'smile', 'hold', 'love', 'die']}
           highlightClass="text-primary font-semibold"
         />
-        <div className="mt-4 text-xs font-mono text-primary uppercase tracking-widest">
+        <div className="mt-3 text-xs font-mono text-primary uppercase tracking-widest">
           — {weddingData.quote.source}
         </div>
       </motion.div>

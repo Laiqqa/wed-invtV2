@@ -156,6 +156,15 @@ class AudioEngine {
     this.unlockContext();
     this.currentTrackId = trackId;
 
+    // Stop any active synth before starting new playback
+    if (this.timerId) {
+      window.clearTimeout(this.timerId);
+      this.timerId = null;
+    }
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+    }
+
     // Check if an audio file is specified
     if (audioSrc) {
       if (this.audioElement) {
